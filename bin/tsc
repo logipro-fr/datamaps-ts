@@ -6,10 +6,10 @@
 #   - limiting action to those of a mere user
 #   - copying what happens in the /app folder in the current folder (-mount => --volume)
 #   - port forwarding 3000 (-p => --publish)
-#   - based on the "docker-spark-ts-node" image
+#   - based on the "docker-datamaps-client-ts" image
 # executes through the command "tsc" the parameters given when calling this file
 docker run -ti --rm \
     --name onthefly-node-container \
     --user 1000:1000 --mount type=bind,source="$(pwd)",target=/usr/src/app \
-    -p 3000:3000 docker-spark-ts-node \
+    -p 3000:3000 docker-datamaps-client-ts \
     node_modules/typescript/bin/tsc $@

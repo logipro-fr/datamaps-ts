@@ -1,6 +1,6 @@
 services:
-    spark-ts-node:
-        container_name: spark-ts-node
+    datamaps-client-ts:
+        container_name: datamaps-client-ts
         build:
             context: ../
             dockerfile: docker/node/Dockerfile
@@ -11,10 +11,10 @@ services:
             - "../:/usr/src/app"
         command: "nodemon -L src/nodeserver.ts"
         networks:
-            - spark-ts-network
+            - datamaps-client-ts-network
 
-    spark-ts-front-nginx:
-        container_name: "spark-ts-front-nginx"
+    datamaps-client-ts-nginx:
+        container_name: "datamaps-client-ts-front-nginx"
         image: nginx:latest
         ports:
             - 8080:80
@@ -23,11 +23,11 @@ services:
             - ./front-nginx/nginx.conf:/etc/nginx/nginx.conf
             - ./front-nginx/conf.d/:/etc/nginx/conf.d
         networks:
-            - spark-ts-network
+            - datamaps-client-ts-network
 
 networks:
-    spark-ts-network:
-        name: "spark-ts-network"
+    datamaps-client-ts-network:
+        name: "datamaps-client-ts-network"
         driver: bridge
         enable_ipv6: true
         ipam:

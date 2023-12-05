@@ -1,13 +1,13 @@
-# Spark-TS
+# datamaps-client-ts
 
-Use Spark-TS to initialize a typescript web project from scratch. This prepares a correct development environment for writing clean code.
+Datamaps-client-ts is a typescript project using datamaps to display maps in web browsers.
 
 ---
 
 # Install
 
 ```console
-git clone git@gitlab.logipro.com:alban/spark-ts.git
+git clone git@gitlab.logipro.com:alban/datamaps-client-ts.git
 ./install
 ```
 
@@ -19,7 +19,7 @@ git clone git@gitlab.logipro.com:alban/spark-ts.git
 bin/tsc
 ```
 
-# Contributing to Spark-TS
+# Contributing to Datamaps-client-ts
 
 ## Requirements
 
