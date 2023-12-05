@@ -1,0 +1,14 @@
+{
+    "transform": { 
+        "^.+\\.ts?$": ["ts-jest", {
+            "isolatedModules": true
+        }] 
+    },
+    "testEnvironment": "node",
+    "testRegex": "/app/tests/.*\\.(test|spec)?\\.(ts|tsx)$",
+    "rootDir": ".",
+    "moduleDirectories": ["node_modules", "src"],
+    "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json", "node"],
+    "collectCoverage": true,
+    "coverageDirectory": "./coverage"
+}

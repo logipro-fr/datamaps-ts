@@ -1,0 +1,36 @@
+services:
+    spark-ts-node:
+        container_name: spark-ts-node
+        build:
+            context: ../
+            dockerfile: docker/node/Dockerfile
+        user: "1000:1000"
+        ports:
+            - "3000:3000"
+        volumes:
+            - "../:/usr/src/app"
+        command: "nodemon -L src/nodeserver.ts"
+        networks:
+            - spark-ts-network
+
+    spark-ts-front-nginx:
+        container_name: "spark-ts-front-nginx"
+        image: nginx:latest
+        ports:
+            - 8080:80
+        volumes:
+            - ../dist:/var/dist
+            - ./front-nginx/nginx.conf:/etc/nginx/nginx.conf
+            - ./front-nginx/conf.d/:/etc/nginx/conf.d
+        networks:
+            - spark-ts-network
+
+networks:
+    spark-ts-network:
+        name: "spark-ts-network"
+        driver: bridge
+        enable_ipv6: true
+        ipam:
+            config:
+                - subnet: fd00:2:1::/112
+                  gateway: fd00:2:1::1
