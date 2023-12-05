@@ -9,6 +9,7 @@ describe("Node server", () => {
     test("Routes", async () => {
         const routes = (await app)._router.stack;
         expect(routesHave(routes, "/")).toBeTruthy();
+        expect(routesHave(routes, "/maps")).toBeTruthy();
     });
 
     function routesHave(
@@ -29,4 +30,10 @@ describe("Node server", () => {
         const response = await request(app).get("/");
         expect(response.text).toEqual("Welcome on my website");
     });
+
+    test("'/maps' route return html page", async () => {
+        const response = await request(app).get("/maps");
+        expect(response.text).toContain("<!DOCTYPE html>");
+        expect(response.text).toContain("<div id=\"map\"></div>");
+    })
 });
