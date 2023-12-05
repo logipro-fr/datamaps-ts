@@ -6,9 +6,9 @@
     "scripts": {
         "test": "jest --testPathPattern=tests/unit",
         "test:integration": "jest --testPathPattern=tests/integration",
-        "test:mutate": "npx stryker run --inPlace",
-        "codecheck": "npx eslint --fix .",
-        "prettier": "npx prettier . --write"
+        "test:mutate": "npx --no-update-notifier stryker run --inPlace",
+        "codecheck": "npx --no-update-notifier eslint --fix .",
+        "prettier": "npx --no-update-notifier prettier . --write"
     },
     "author": "",
     "license": "ISC",
