@@ -33,4 +33,29 @@ export default class LeafletMap {
         this.map.flyTo(point);
         return this.map.getCenter();
     }
+
+    public setUpTiles(): void {
+        const tiles = this.createTiles();
+        tiles.addTo(this.map);
+    }
+
+    private createTiles(): L.TileLayer {
+        return L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            maxZoom: 19,
+            attribution:
+            '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        });
+    }
+
+    public getTileLayerFromMap(): L.TileLayer | null {
+        let layer: L.TileLayer | null = null;
+
+        this.map.eachLayer((l) => {
+            if (l instanceof L.TileLayer) {
+                layer = l;
+            }
+        })
+
+        return layer;
+    }
 }
