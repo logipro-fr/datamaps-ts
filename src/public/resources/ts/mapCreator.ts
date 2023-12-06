@@ -7,7 +7,7 @@ export default class MapCreator {
         this.map = new LeafletMap();
     }
 
-    public getMap(): any {
+    public getMap(): LeafletMap {
         return this.map;
     }
 }

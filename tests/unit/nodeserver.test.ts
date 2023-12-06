@@ -34,6 +34,6 @@ describe("Node server", () => {
     test("'/maps' route return html page with map", async () => {
         const response = await request(app).get("/maps");
         expect(response.text).toContain("<!DOCTYPE html>");
-        expect(response.text).toContain("<div id=\"map\"></div>");
-    })
+        expect(response.text).toContain('<div id="map"></div>');
+    });
 });

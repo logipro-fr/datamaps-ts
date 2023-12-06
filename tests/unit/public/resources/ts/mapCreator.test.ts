@@ -1,4 +1,4 @@
-/** @jest-environment jsdom */
+/** @jest-environment @stryker-mutator/jest-runner/jest-env/jsdom */
 import MapCreator from "../../../../../src/public/resources/ts/mapCreator";
 
 describe("Map Creator", () => {

@@ -10,5 +10,6 @@
     "tsconfigFile": "tsconfig.json",
     "typescriptChecker": {
         "prioritizePerformanceOverAccuracy": true
-    }
+    },
+    "ignorePatterns": ["src/**/*.html"]
 }

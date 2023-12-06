@@ -11,7 +11,7 @@ app.get("/", (req, res) => {
 app.get("/maps", (req, res) => {
     app.use(express.static(path.resolve() + "/src/public/resources"));
     res.sendFile(path.resolve() + "/src/public/maps.html");
-})
+});
 
 const listener = app.listen(port, () => {});
 
