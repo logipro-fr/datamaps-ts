@@ -1,4 +1,6 @@
-import L, { LatLng, LatLngBounds } from "leaflet";
+import L, { LatLng } from "leaflet";
+
+type Bounds = [[south: number, west: number], [north: number, east: number]];
 
 export default class LeafletMap {
     private map: L.Map;
@@ -7,22 +9,28 @@ export default class LeafletMap {
         this.map = L.map("map");
     }
 
-    public defineBounds(bounds: Array<Array<number>>): void {
-        const lboundSouthWest = new LatLng(bounds[0][0], bounds[0][1]);
-        const lboundNorthEast = new LatLng(bounds[1][0], bounds[1][1]);
-        const lbounds = new LatLngBounds(lboundSouthWest, lboundNorthEast);
-        this.map.fitBounds(lbounds);
+    public defineBounds(bounds: Bounds): void {
+        this.map.fitBounds(bounds);
     }
 
-    public getBounds(): Array<Array<number>> {
-        const boundSouthWest: Array<number> = [
-            this.map.getBounds().getSouthWest().lat,
-            this.map.getBounds().getSouthWest().lng,
+    public getBounds(): Bounds {
+        const boundSouthWest: Bounds[0] = [
+            this.map.getBounds().getSouth(),
+            this.map.getBounds().getWest(),
         ];
-        const boundNorthEast: Array<number> = [
-            this.map.getBounds().getNorthEast().lat,
-            this.map.getBounds().getNorthEast().lng,
+        const boundNorthEast: Bounds[1] = [
+            this.map.getBounds().getNorth(),
+            this.map.getBounds().getEast(),
         ];
         return [boundSouthWest, boundNorthEast];
+    }
+
+    public defineMaxBounds(bounds: Bounds): void {
+        this.map.setMaxBounds(bounds);
+    }
+
+    public centerMapOn(point: LatLng): LatLng {
+        this.map.flyTo(point);
+        return this.map.getCenter();
     }
 }

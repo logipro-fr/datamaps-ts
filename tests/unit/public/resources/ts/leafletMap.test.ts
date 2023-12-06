@@ -29,6 +29,17 @@ describe("Leaflet facade", () => {
                 [3, 12],
             ]),
         ).toBeTruthy();
+
+        expect(lmap.centerMapOn(L.latLng(0, 200))).toStrictEqual(
+            L.latLng(0, 200),
+        );
+        lmap.defineMaxBounds([
+            [-90, -180],
+            [90, 180],
+        ]);
+        expect(lmap.centerMapOn(L.latLng(0, 200))).not.toStrictEqual(
+            L.latLng(0, 200),
+        );
     });
 
     function arrayContainsArray(
