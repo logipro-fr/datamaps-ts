@@ -47,15 +47,17 @@ export default class LeafletMap {
         });
     }
 
-    public getTileLayerFromMap(): L.TileLayer | null {
+    public getTileLayerFromMap(): L.TileLayer {
         let layer: L.TileLayer | null = null;
 
         this.map.eachLayer((l) => {
-            if (l instanceof L.TileLayer) {
-                layer = l;
-            }
-        })
+            if (l instanceof L.TileLayer) { layer = l; }
+        });
 
+        if (layer === null) {
+            throw new Error("There are no tile layer in map");
+        }
+        
         return layer;
     }
 }

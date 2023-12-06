@@ -2,8 +2,12 @@
 import L from "leaflet";
 import LeafletMap from "../../../../../src/public/resources/ts/leafletMap";
 
+const WORLD_BOUNDS: [[number, number], [number, number]] = [[-90, -180], [90, 180]]
+const POINT_OUT_OF_WORLD = L.latLng(0, 200);
+
 describe("Leaflet facade", () => {
     beforeEach(() => {
+        document.body.innerHTML = '<div id="map"></div>';
         mockMapSize();
     });
 
@@ -14,38 +18,36 @@ describe("Leaflet facade", () => {
     }
 
     test("Map creation", () => {
-        document.body.innerHTML = '<div id="map"></div>';
-
         const lmap = new LeafletMap();
         expect(lmap).toBeInstanceOf(LeafletMap);
 
-        lmap.defineBounds([[0, 0], [3, 12]]);
+        lmap.defineBounds([[-10, -10], [10, 10]]);
         expect(arrayContainsArray(
                 lmap.getBounds(), 
-                [[0, 0], [3, 12]]
+                [[-10, -10], [10, 10]]
             )).toBeTruthy();
 
-        expect(lmap.centerMapOn(L.latLng(0, 200)))
-            .toStrictEqual(L.latLng(0, 200));
-        lmap.defineMaxBounds([
-            [-90, -180],
-            [90, 180],
-        ]);
-        expect(lmap.centerMapOn(L.latLng(0, 200)))
-            .not.toStrictEqual(L.latLng(0, 200));
+        expect(lmap.centerMapOn(POINT_OUT_OF_WORLD))
+            .toStrictEqual(POINT_OUT_OF_WORLD);
+        lmap.defineMaxBounds(WORLD_BOUNDS);
+        expect(lmap.centerMapOn(POINT_OUT_OF_WORLD))
+            .not.toStrictEqual(POINT_OUT_OF_WORLD);
 
         lmap.setUpTiles();
-        const ltiles = lmap.getTileLayerFromMap();
-        if (ltiles != null) {
-            // @ts-expect-error Typescript wants to completely implement L.coords even though it is not necessary
-            expect(ltiles.getTileUrl({x: 0, y: 0, z: 0}))
-                .toContain("https://tile.openstreetmap.org");
-            expect(ltiles.options.maxZoom).toBe(19);
-            expect(ltiles.options.attribution).toEqual('&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>');
-        } else {
-            expect(ltiles).toBeInstanceOf(L.TileLayer);
-        }
+        const ltileLayer = lmap.getTileLayerFromMap();
+        expect(ltileLayer.getTileUrl(
+        // @ts-expect-error Typescript wants to completely implement L.coords even though it is not necessary
+                {x: 0, y: 0, z: 0}
+            )).toContain("https://tile.openstreetmap.org");
+        expect(ltileLayer.options.maxZoom).toBe(19);
+        expect(ltileLayer.options.attribution).toEqual('&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>');
     });
+
+    test("Error thrown when no tile layer", () => {
+        const lmap = new LeafletMap();
+        
+        expect(() => lmap.getTileLayerFromMap()).toThrow(Error("There are no tile layer in map"));
+    })
 
     function arrayContainsArray(
         container: [[number, number], [number, number]],
