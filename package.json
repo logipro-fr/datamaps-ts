@@ -4,8 +4,8 @@
     "description": "",
     "type": "module",
     "scripts": {
-        "test": "jest --testPathPattern=tests/unit",
-        "test:integration": "jest --testPathPattern=tests/integration",
+        "test": "jest -i tests/unit",
+        "test:integration": "jest -i tests/integration",
         "test:mutate": "npx --no-update-notifier stryker run --inPlace",
         "codecheck": "npx --no-update-notifier eslint --fix .",
         "prettier": "npx --no-update-notifier prettier . --write"
@@ -37,6 +37,7 @@
     },
     "dependencies": {
         "@types/leaflet": "^1.9.8",
+        "jest-environment-jsdom": "^29.7.0",
         "leaflet": "^1.9.4"
     }
 }
