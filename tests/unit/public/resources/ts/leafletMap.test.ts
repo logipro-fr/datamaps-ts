@@ -1,6 +1,9 @@
 /** @jest-environment @stryker-mutator/jest-runner/jest-env/jsdom */
-import L from "leaflet";
+
+import L, { MarkerClusterGroup } from "leaflet";
 import LeafletMap from "../../../../../src/public/resources/ts/leafletMap";
+import LayerDTO from "../../../../../src/Domain/Model/DataMap/LayerDTO";
+import MarkerDTO from "../../../../../src/Domain/Model/DataMap/MarkerDTO";
 
 const WORLD_BOUNDS: [[number, number], [number, number]] = [[-90, -180], [90, 180]]
 const POINT_OUT_OF_WORLD = L.latLng(0, 200);
@@ -41,13 +44,114 @@ describe("Leaflet facade", () => {
             )).toContain("https://tile.openstreetmap.org");
         expect(ltileLayer.options.maxZoom).toBe(19);
         expect(ltileLayer.options.attribution).toEqual('&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>');
+
     });
+
+    test("Layer Creation", () => {
+        const lmap = new LeafletMap();
+
+        const layers: LayerDTO[] = [];
+        layers.push(new LayerDTO("accidents", [
+            new MarkerDTO([0, 0], "First point (layer 1)", "red"),
+            new MarkerDTO([1, 3], "Second point (layer 1)", "red")
+        ]));
+        layers.push(new LayerDTO("nonaccidents", [
+            new MarkerDTO([-7, -5], "First point (layer 2)", "blue"),
+            new MarkerDTO([-2, 2], "Second point (layer 2)", "blue"),
+            new MarkerDTO([-90, -180], "Third point (layer 2)", "blue"),
+        ]));
+
+        const llayers = lmap.createLayersAs(layers);
+        expect(llayers["accidents"]).toBeDefined();
+        expect(llayers["nonaccidents"]).toBeDefined();
+
+        const laccidentLayers = getAllOfType(
+            llayers["accidents"].getLayers(), 
+            L.MarkerClusterGroup);
+        expect(laccidentLayers).toHaveLength(2);
+        const lmarkersLayer1 = getAllOfType(
+            laccidentLayers[0].getLayers(), 
+            L.Marker);
+        expect(lmarkersLayer1).toHaveLength(2);
+        const lcirclesLayer1 = getAllOfType(
+            laccidentLayers[1].getLayers(), 
+            L.CircleMarker);
+        expect(lcirclesLayer1).toHaveLength(2);
+
+        const lnonaccidentLayers = getAllOfType(
+            llayers["nonaccidents"].getLayers(), 
+            L.MarkerClusterGroup);
+        expect(lnonaccidentLayers).toHaveLength(2);
+
+        const lmarkersLayer2 = getAllOfType(
+            lnonaccidentLayers[0].getLayers(), 
+            L.Marker);
+        expect(lmarkersLayer2).toHaveLength(3);
+        
+        const lcirclesLayer2 = getAllOfType(
+            lnonaccidentLayers[1].getLayers(), 
+            L.CircleMarker);
+        expect(lcirclesLayer2).toHaveLength(3);
+    });
+
+    function getAllOfType<T, X extends T>(array: Array<T>, type: new (...args: any) => X): Array<X> {
+        const sorted: Array<X> = [];
+        array.forEach((t) => {
+            if (t instanceof type) {
+                sorted.push(t as X);
+            }
+        });
+        return sorted;
+    }
+
+    test("L.Marker creation from MarkerDTO", () => {
+        const lmap = new LeafletMap();
+
+        const marker1 = new MarkerDTO([0, 0], "First point", "red");
+        const lmarker1 = lmap.createMarkerFrom(marker1);
+        expect(lmarker1.getLatLng()).toStrictEqual(L.latLng([0, 0]));
+        expect(lmarker1.getPopup()?.getContent()).toStrictEqual("First point");
+        expect(lmarker1.getIcon().options.iconUrl).toContain("/images/red.png");
+        expect(lmarker1.getIcon().options.iconSize).toEqual([48, 48]);
+        expect(lmarker1.getIcon().options.iconAnchor).toEqual([24, 48]);
+        expect(lmarker1.getIcon().options.popupAnchor).toEqual([0, -32]);
+
+        const marker2 = new MarkerDTO([1, 3], "Second point", "blue");
+        const lmarker2 = lmap.createMarkerFrom(marker2);
+        expect(lmarker2.getLatLng()).toStrictEqual(L.latLng([1, 3]));
+        expect(lmarker2.getPopup()?.getContent()).toStrictEqual("Second point");
+        expect(lmarker2.getIcon().options.iconUrl).toContain("/images/blue.png");
+
+        const marker3 = new MarkerDTO([0, 0], "Third point", "green");
+        const lmarker3 = lmap.createMarkerFrom(marker3);
+        expect(lmarker3.getPopup()?.getContent()).toStrictEqual("Third point");
+        expect(lmarker3.getIcon().options.iconUrl).toContain("/images/green.png");
+    });
+
+    test("L.CircleMarker creation from MarkerDTO", () => {
+        const lmap = new LeafletMap();
+
+        const marker1 = new MarkerDTO([0, 0], "First point", "red");
+        const lcircleMarker1 = lmap.createCircleFrom(marker1);
+        expect(lcircleMarker1.getLatLng()).toStrictEqual(L.latLng([0, 0]));
+        expect(lcircleMarker1.getPopup()?.getContent()).toStrictEqual("First point");
+        expect(lcircleMarker1.options.radius).toBe(1000);
+        expect(lcircleMarker1.options.color).toBe("red");
+        expect(lcircleMarker1.options.fillColor).toBe("red");
+
+        const marker2 = new MarkerDTO([1, 3], "Second point", "green");
+        const lcircleMarker2 = lmap.createCircleFrom(marker2);
+        expect(lcircleMarker2.getLatLng()).toStrictEqual(L.latLng([1, 3]));
+        expect(lcircleMarker2.getPopup()?.getContent()).toStrictEqual("Second point");
+        expect(lcircleMarker2.options.color).toBe("green");
+        expect(lcircleMarker2.options.fillColor).toBe("green");
+    })
 
     test("Error thrown when no tile layer", () => {
         const lmap = new LeafletMap();
-        
-        expect(() => lmap.getTileLayerFromMap()).toThrow(Error("There are no tile layer in map"));
-    })
+        expect(() => lmap.getTileLayerFromMap())
+            .toThrow(Error("There are no tile layer in map"));
+    });
 
     function arrayContainsArray(
         container: [[number, number], [number, number]],

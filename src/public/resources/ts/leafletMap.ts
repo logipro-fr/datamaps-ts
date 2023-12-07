@@ -1,6 +1,32 @@
-import L, { LatLng } from "leaflet";
+import L from "leaflet";
+import "leaflet.markercluster";
+import LayerDTO from "src/Domain/Model/DataMap/LayerDTO";
+import MarkerDTO from "src/Domain/Model/DataMap/MarkerDTO";
 
 type Bounds = [[south: number, west: number], [north: number, east: number]];
+const ICON_SIZE: [number, number] = [48, 48];
+const ICON_POINTED_POINT: [number, number] = [
+    ICON_SIZE[0] / 2, 
+    ICON_SIZE[1]
+];
+const ICON_POPUP_POINT: [number, number] = [
+    0, 
+    - ICON_SIZE[1] * 2 / 3
+];
+export const ICONS: {[key: string]: L.Icon} = {
+    "blue": createIcon("blue"),
+    "red": createIcon("red"),
+    "green": createIcon("green"),
+};
+function createIcon(color: string)
+{
+    return L.icon({
+        iconUrl: "../images/" + color + ".png",
+        iconSize: ICON_SIZE,
+        iconAnchor: ICON_POINTED_POINT,
+        popupAnchor: ICON_POPUP_POINT,
+    });
+}
 
 export default class LeafletMap {
     private map: L.Map;
@@ -29,7 +55,7 @@ export default class LeafletMap {
         this.map.setMaxBounds(bounds);
     }
 
-    public centerMapOn(point: LatLng): LatLng {
+    public centerMapOn(point: L.LatLng): L.LatLng {
         this.map.flyTo(point);
         return this.map.getCenter();
     }
@@ -59,5 +85,48 @@ export default class LeafletMap {
         }
         
         return layer;
+    }
+
+    public createLayersAs(layers: LayerDTO[]): {[name: string]: L.LayerGroup} {
+        const llayers: {[name: string]: L.LayerGroup} = {};
+
+        layers.forEach(layer => {
+            const l = L.layerGroup(this.createMarkersAs(layer.markers));
+            llayers[layer.name] = l;
+        });
+
+        return llayers;
+    }
+
+    public createMarkersAs(markers: readonly MarkerDTO[]): L.Layer[] {
+        const markersGroup = L.markerClusterGroup();
+        const circlesGroup = L.markerClusterGroup();
+
+        markers.forEach((m) => {
+            this.createMarkerFrom(m).addTo(markersGroup);
+            this.createCircleFrom(m).addTo(circlesGroup);
+        })
+
+        return [markersGroup, circlesGroup];
+    }
+
+    public createMarkerFrom(marker: MarkerDTO): L.Marker {
+        return L.marker(
+            marker.point as [number, number], 
+            {
+                icon: ICONS[marker.color]
+            })
+            .bindPopup(marker.description);
+    }
+
+    public createCircleFrom(marker: MarkerDTO): L.CircleMarker {
+        return L.circle(
+            marker.point as [number, number], 
+            {
+                radius: 1000, 
+                color: marker.color, 
+                fillColor: marker.color
+            })
+            .bindPopup(marker.description);
     }
 }
