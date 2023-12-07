@@ -99,8 +99,22 @@ export default class LeafletMap {
     }
 
     public createMarkersAs(markers: readonly MarkerDTO[]): L.Layer[] {
-        const markersGroup = L.markerClusterGroup();
-        const circlesGroup = L.markerClusterGroup();
+        const markersGroup = L.markerClusterGroup({
+            iconCreateFunction: function () {
+                return new L.DivIcon({
+                    iconSize: new L.Point(0, 0),
+                });
+            },
+        });
+        const circlesGroup = L.markerClusterGroup({
+            iconCreateFunction: function (cluster) {
+                return new L.DivIcon({
+                    html: cluster.getChildCount().toString(),
+                    className: "mycluster " + markers[0].color,
+                    iconSize: new L.Point(40, 40),
+                });
+            },
+        });
 
         markers.forEach((m) => {
             this.createMarkerFrom(m).addTo(markersGroup);

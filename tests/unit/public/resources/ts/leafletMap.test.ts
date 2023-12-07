@@ -1,6 +1,6 @@
 /** @jest-environment @stryker-mutator/jest-runner/jest-env/jsdom */
 
-import L, { MarkerClusterGroup } from "leaflet";
+import L from "leaflet";
 import LeafletMap from "../../../../../src/public/resources/ts/leafletMap";
 import LayerDTO from "../../../../../src/Domain/Model/DataMap/LayerDTO";
 import MarkerDTO from "../../../../../src/Domain/Model/DataMap/MarkerDTO";
@@ -64,37 +64,9 @@ describe("Leaflet facade", () => {
         const llayers = lmap.createLayersAs(layers);
         expect(llayers["accidents"]).toBeDefined();
         expect(llayers["nonaccidents"]).toBeDefined();
-
-        const laccidentLayers = getAllOfType(
-            llayers["accidents"].getLayers(), 
-            L.MarkerClusterGroup);
-        expect(laccidentLayers).toHaveLength(2);
-        const lmarkersLayer1 = getAllOfType(
-            laccidentLayers[0].getLayers(), 
-            L.Marker);
-        expect(lmarkersLayer1).toHaveLength(2);
-        const lcirclesLayer1 = getAllOfType(
-            laccidentLayers[1].getLayers(), 
-            L.CircleMarker);
-        expect(lcirclesLayer1).toHaveLength(2);
-
-        const lnonaccidentLayers = getAllOfType(
-            llayers["nonaccidents"].getLayers(), 
-            L.MarkerClusterGroup);
-        expect(lnonaccidentLayers).toHaveLength(2);
-
-        const lmarkersLayer2 = getAllOfType(
-            lnonaccidentLayers[0].getLayers(), 
-            L.Marker);
-        expect(lmarkersLayer2).toHaveLength(3);
-        
-        const lcirclesLayer2 = getAllOfType(
-            lnonaccidentLayers[1].getLayers(), 
-            L.CircleMarker);
-        expect(lcirclesLayer2).toHaveLength(3);
     });
 
-    function getAllOfType<T, X extends T>(array: Array<T>, type: new (...args: any) => X): Array<X> {
+    function getAllOfType<T, X extends T>(array: Array<T>, type: new (...args) => X): Array<X> {
         const sorted: Array<X> = [];
         array.forEach((t) => {
             if (t instanceof type) {
@@ -103,6 +75,31 @@ describe("Leaflet facade", () => {
         });
         return sorted;
     }
+
+    test("Markers array creation from array", () => {
+        const lmap = new LeafletMap();
+
+        const markers = [
+            new MarkerDTO([-7, -5], "First point", "blue"),
+            new MarkerDTO([-2, 2], "Second point", "green"),
+            new MarkerDTO([-90, -180], "Third point", "red"),
+        ];
+
+        const lmlayers = getAllOfType(
+            lmap.createMarkersAs(markers),
+            L.MarkerClusterGroup);
+        expect(lmlayers).toHaveLength(2);
+
+        const lmarkersLayer = getAllOfType(
+            lmlayers[0].getLayers(), 
+            L.Marker);
+        expect(lmarkersLayer).toHaveLength(3);
+        
+        const lcirclesLayer = getAllOfType(
+            lmlayers[1].getLayers(), 
+            L.CircleMarker);
+        expect(lcirclesLayer).toHaveLength(3);
+    });
 
     test("L.Marker creation from MarkerDTO", () => {
         const lmap = new LeafletMap();
