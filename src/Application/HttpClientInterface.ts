@@ -7,5 +7,5 @@ export default interface HttpClientInterface {
         json: string,
     ): Promise<DatamapResponse<{ mapId: string; displayUrl: string }>>;
 
-    get_json(url: string): Promise<DatamapResponse<MapObject | MapObject[]>>;
+    get_json(url: string): Promise<DatamapResponse<MapObject | {maps: MapObject[]}>>;
 }

@@ -16,7 +16,7 @@ export default class FetchHttpClient implements HttpClientInterface {
 
     async get_json(
         url: string,
-    ): Promise<DatamapResponse<MapObject | MapObject[]>> {
+    ): Promise<DatamapResponse<MapObject | {maps: MapObject[]}>> {
         const response = await fetch(url);
         return response.json();
     }

@@ -2,6 +2,40 @@ import app, { listener } from "../../src/nodeserver";
 import request from "supertest";
 
 describe("Node server", () => {
+    beforeAll(() => {
+        jest.spyOn(global, "fetch").mockImplementation((input) => {
+            const response: string = JSON.stringify({
+                success: true,
+                data: {maps: [
+                    {
+                        mapId: "dm_map_6554ddab8b9fc8.15595444",
+                        bounds: [
+                            [1, 2],
+                            [3, 4],
+                        ],
+                        createdAt: "2023-11-15T16:18:12",
+                        layers: [
+                            {
+                                name: "accident",
+                                markers: [
+                                    {
+                                        point: [49.003, 2.537],
+                                        description:
+                                            "Accident qui aurait lieu entre 16h et 17h",
+                                        color: "red",
+                                    },
+                                ],
+                            },
+                        ],
+                    }
+                ]},
+                error_code: 200,
+                message: "",
+            });
+            return Promise.resolve(new Response(response));
+        });
+    })
+
     afterAll(async () => {
         listener.close();
     });

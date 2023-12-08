@@ -3,6 +3,6 @@
     "ignore": [],
     "watch": ["**/*.ts", "src/public/*.html"],
     "execMap": {
-        "ts": "node --no-warnings --loader ts-node/esm"
+        "ts": "node --no-warnings --loader ts-node/esm --es-module-specifier-resolution=node"
     }
 }

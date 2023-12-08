@@ -1,5 +1,6 @@
 <script src="js.js"></script>
 <script type="text/javascript">
     const map = new MapConfigurator();
-    map.setBounds([[42, -5], [40, 50]]);
+    map.setBounds(JSON.parse('<%= bounds %>'));
+    map.addLayers(JSON.parse('<%= layers %>'));
 </script>

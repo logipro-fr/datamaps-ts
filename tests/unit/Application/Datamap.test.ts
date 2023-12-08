@@ -14,7 +14,7 @@ class FakeHttpClient implements HttpClientInterface {
         );
     }
 
-    get_json(url: string): Promise<DatamapResponse<MapObject | MapObject[]>> {
+    get_json(url: string): Promise<DatamapResponse<MapObject | {maps: MapObject[]}>> {
         throw new Error("Called empty function from " + url);
     }
 }
@@ -25,7 +25,7 @@ describe("Datamap", () => {
             success: true,
             data: {
                 mapId: "dm_map_6554ddab8b9fc8.15595444",
-                displayUrl: "/api/display/dm_map_6554ddab8b9fc8.15595444",
+                displayUrl: "/api/v1/display/dm_map_6554ddab8b9fc8.15595444",
             },
             error_code: 200,
             message: "",
@@ -34,13 +34,13 @@ describe("Datamap", () => {
         const createResponse = await datamap.create(getDefaultMap());
 
         expect(mockedClient.post_json).toHaveBeenCalledWith(
-            "https://accidentprediction.fr/datamaps/api/create",
+            "https://accidentprediction.fr/datamaps/api/v1/create",
             JSON.stringify(getDefaultMap()),
         );
 
         expect(createResponse.mapId).toBe("dm_map_6554ddab8b9fc8.15595444");
         expect(createResponse.displayUrl).toBe(
-            "/api/display/dm_map_6554ddab8b9fc8.15595444",
+            "/api/v1/display/dm_map_6554ddab8b9fc8.15595444",
         );
     });
 
@@ -54,7 +54,7 @@ describe("Datamap", () => {
         );
 
         expect(mockedClient.get_json).toHaveBeenCalledWith(
-            "https://accidentprediction.fr/datamaps/api/display/dm_map_6554ddab8b9fc8.15595444",
+            "https://accidentprediction.fr/datamaps/api/v1/display/dm_map_6554ddab8b9fc8.15595444",
         );
 
         expect(map).toBeInstanceOf(MapDTO);
@@ -65,14 +65,16 @@ describe("Datamap", () => {
 
     test("Search 1 map", async () => {
         const mockedClient = getMockedHttpClientForGETWith(
-            getDefaultResponseWith([getDefaultMap()]),
+            getDefaultResponseWith({
+                maps: [getDefaultMap()]
+            }),
         );
 
         const datamap = new Datamap(mockedClient);
         const maps: MapDTO[] = await datamap.search(1);
 
         expect(mockedClient.get_json).toHaveBeenCalledWith(
-            "https://accidentprediction.fr/datamaps/api/search/1",
+            "https://accidentprediction.fr/datamaps/api/v1/search/1",
         );
 
         expect(maps).toHaveLength(1);
@@ -84,26 +86,27 @@ describe("Datamap", () => {
 
     test("Search 3 maps", async () => {
         const mockedClient = getMockedHttpClientForGETWith(
-            getDefaultResponseWith([
+            getDefaultResponseWith({
+                maps: [
                 getDefaultMap(),
                 getDefaultMap(),
                 getDefaultMap(),
-            ]),
+            ]}),
         );
 
         const datamap = new Datamap(mockedClient);
         const maps: MapDTO[] = await datamap.search(3);
 
         expect(mockedClient.get_json).toHaveBeenCalledWith(
-            "https://accidentprediction.fr/datamaps/api/search/3",
+            "https://accidentprediction.fr/datamaps/api/v1/search/3",
         );
 
         expect(maps).toHaveLength(3);
     });
 
     function getDefaultResponseWith(
-        data: MapObject | MapObject[],
-    ): DatamapResponse<MapObject | MapObject[]> {
+        data: MapObject | {maps: MapObject[]},
+    ): DatamapResponse<MapObject | {maps: MapObject[]}> {
         return {
             success: true,
             data: data,
@@ -141,7 +144,7 @@ describe("Datamap", () => {
     }
 
     function getMockedHttpClientForGETWith(
-        valueToReturn: DatamapResponse<MapObject | MapObject[]>,
+        valueToReturn: DatamapResponse<MapObject | {maps: MapObject[]}>,
     ): FakeHttpClient {
         const mockedClient = new FakeHttpClient();
         jest.spyOn(mockedClient, "get_json").mockReturnValue(

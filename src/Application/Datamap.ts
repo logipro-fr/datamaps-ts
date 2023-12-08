@@ -13,13 +13,13 @@ export default class Datamap {
     public async create(
         mapData: MapObject,
     ): Promise<{ mapId: string; displayUrl: string }> {
-        const url = "https://accidentprediction.fr/datamaps/api/create";
+        const url = "https://accidentprediction.fr/datamaps/api/v1/create";
         return (await this.postObjectAtUrl(url, mapData)).data;
     }
 
     public async display(mapId: string): Promise<MapDTO> {
         const url =
-            "https://accidentprediction.fr/datamaps/api/display/" + mapId;
+            "https://accidentprediction.fr/datamaps/api/v1/display/" + mapId;
         const map: MapDTO = MapDTO.createFromObject(
             (await this.getJsonResponseFromUrl(url)).data as MapObject,
         );
@@ -28,10 +28,10 @@ export default class Datamap {
 
     public async search(count: number): Promise<MapDTO[]> {
         const url =
-            "https://accidentprediction.fr/datamaps/api/search/" +
+            "https://accidentprediction.fr/datamaps/api/v1/search/" +
             count.toString();
-        const mapsData = (await this.getJsonResponseFromUrl(url))
-            .data as MapObject[];
+        const mapsData: MapObject[] = ((await this.getJsonResponseFromUrl(url))
+            .data as {maps: MapObject[]}).maps;
         const maps: MapDTO[] = mapsData.map((map) => {
             return MapDTO.createFromObject(map);
         });
@@ -40,7 +40,7 @@ export default class Datamap {
 
     private async getJsonResponseFromUrl(
         url: string,
-    ): Promise<DatamapResponse<MapObject | MapObject[]>> {
+    ): Promise<DatamapResponse<MapObject | {maps: MapObject[]}>> {
         const response = await this.client.get_json(url);
         return response;
     }
