@@ -7,4 +7,25 @@
     layers = layers.replaceAll("&#39;", "'");
     layers = layers.replaceAll("\n", " ");
     map.addLayers(JSON.parse(layers));
+    map.addLegend("Au début de chaque heure, nous générons des prédictions d'accidents "
+        + "sur 400 points accidentogènes.<br>"
+        + "Ces prédictions sont réalisées grâce à <a href='https://www.linkedin.com/showcase/accident-prediction/'>"
+        + "notre algorithme appelé Weighted Classification Model</a>.")
 </script>
+
+<div id="bottom-right-link">
+    <div class="report-question">
+        <img src="images/info_black_24dp.svg" class="hover-target"/>
+        <aside class="hover-popup">
+            <p>Afin d'améliorer les prédictions nous avons besoin de plus de données.
+            <br>En contribuant, vous aiderez à améliorer la prédiction d'accidents de la route.</p>
+        </aside>
+        <p>Vous êtes au <br>courant d'un accident ?</p>
+    </div>
+    <div class="report-button">
+        <a href="https://accidentprediction.fr/report/form-report-accident">
+            <img src="images/minor_crash_car.svg"/>
+            SIGNALEZ-LE
+        </a>
+    </div>
+</div>

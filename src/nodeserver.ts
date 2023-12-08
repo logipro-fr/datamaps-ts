@@ -12,13 +12,13 @@ app.set('views', path.resolve() + "/src/public");
 app.set('view engine', 'ejs');
 
 app.get("/", async (req, res) => {
-
     const datamap = new Datamap(new FetchHttpClient());
     const map = (await datamap.search(1))[0];
 
     const layers = JSON.stringify(map.layers);
     const bounds = JSON.stringify(map.bounds);
     app.use(express.static(path.resolve() + "/dist/public/resources"));
+    app.use(express.static(path.resolve() + "/src/public/resources"));
     res.render(path.resolve() + "/src/public/index", {bounds: bounds, layers: layers});
 });
 
