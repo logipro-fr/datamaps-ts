@@ -1,14 +1,21 @@
 #!/bin/bash
 
-# runs a container 
-#   - temporarily (--rm)
-#   - named "onthefly-node-container" (--name)
-#   - limiting action to those of a mere user
-#   - copying what happens in the /app folder in the current folder (-mount => --volume)
-#   - port forwarding 3000 (-p => --publish)
-#   - based on the "docker-datamaps-client-ts" image
-# executes through the command "npm" the parameters given when calling this file
-docker run -ti --rm \
-    --name onthefly-node-container \
-    --user 1000:1000 --mount type=bind,source="$(pwd)",target=/usr/src/app \
-    -p 3000:3000 docker-datamaps-client-ts npm --no-update-notifier $@
+cmd=`docker container ls | grep datamaps-client-ts`
+status=$?
+if [ $status = 0 ]
+then
+    docker exec -ti datamaps-client-ts npm --no-update-modifier $@
+else
+    # runs a container 
+    #   - temporarily (--rm)
+    #   - named "onthefly-node-container" (--name)
+    #   - limiting action to those of a mere user
+    #   - copying what happens in the /app folder in the current folder (-mount => --volume)
+    #   - port forwarding 3000 (-p => --publish)
+    #   - based on the "docker-datamaps-client-ts" image
+    # executes through the command "npm" the parameters given when calling this file
+    docker run -ti --rm \
+        --name onthefly-node-container \
+        --user 1000:1000 --mount type=bind,source="$(pwd)",target=/usr/src/app \
+        -p 3000:3000 docker-datamaps-client-ts npm --no-update-notifier $@
+fi

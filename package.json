@@ -8,7 +8,8 @@
         "test:integration": "jest -i tests/integration",
         "test:mutate": "npx --no-update-notifier stryker run --inPlace",
         "codecheck": "npx --no-update-notifier eslint --fix .",
-        "prettier": "npx --no-update-notifier prettier . --write"
+        "prettier": "npx --no-update-notifier prettier . --write",
+        "webpack": "webpack"
     },
     "author": "",
     "license": "ISC",
@@ -36,10 +37,14 @@
         "webpack-cli": "^5.1.4"
     },
     "dependencies": {
+        "@types/express-ejs-layouts": "^2.5.4",
         "@types/leaflet": "^1.9.8",
         "@types/leaflet.markercluster": "^1.5.4",
+        "ejs": "^3.1.9",
+        "express-ejs-layouts": "^2.5.1",
         "jest-environment-jsdom": "^29.7.0",
         "leaflet": "^1.9.4",
-        "leaflet.markercluster": "^1.5.3"
+        "leaflet.markercluster": "^1.5.3",
+        "ts-loader": "^9.5.1"
     }
 }
