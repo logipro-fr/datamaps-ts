@@ -2,8 +2,8 @@ import L from "leaflet";
 import "leaflet.markercluster";
 import LayerDTO from "src/Domain/Model/DataMap/LayerDTO";
 import MarkerDTO from "src/Domain/Model/DataMap/MarkerDTO";
+import IMap, { Bounds } from "./IMap";
 
-type Bounds = [[south: number, west: number], [north: number, east: number]];
 const ICON_SIZE: [number, number] = [48, 48];
 const ICON_POINTED_POINT: [number, number] = [
     ICON_SIZE[0] / 2, 
@@ -28,8 +28,9 @@ function createIcon(color: string)
     });
 }
 
-export default class LeafletMap {
+export default class LeafletMap implements IMap {
     private map: L.Map;
+    private controlLayers: L.Control.Layers|undefined = undefined;
 
     public constructor() {
         this.map = L.map("map");
@@ -85,6 +86,26 @@ export default class LeafletMap {
         }
         
         return layer;
+    }
+
+    public addLayers(layers: LayerDTO[]): void {
+        const llayers = this.createLayersAs(layers);
+        Object.values(llayers)[0].addTo(this.map);
+        this.controlLayers = L.control.layers(undefined, llayers).addTo(this.map);
+    }
+
+    public getLayers(): L.Layer[] {
+        const llayers: L.Layer[] = [];
+
+        this.map.eachLayer(layer => {
+            llayers.push(layer);
+        });
+
+        return llayers;
+    }
+
+    public getLayersControl(): L.Control.Layers | undefined {
+        return this.controlLayers;
     }
 
     public createLayersAs(layers: LayerDTO[]): {[name: string]: L.LayerGroup} {

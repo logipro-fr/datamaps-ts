@@ -44,7 +44,29 @@ describe("Leaflet facade", () => {
             )).toContain("https://tile.openstreetmap.org");
         expect(ltileLayer.options.maxZoom).toBe(19);
         expect(ltileLayer.options.attribution).toEqual('&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>');
+    });
 
+    test("Layer are added to map", () => {
+        const lmap = new LeafletMap();
+
+        const layers: LayerDTO[] = [];
+        layers.push(new LayerDTO("accidents", [
+            new MarkerDTO([0, 0], "First point (layer 1)", "red"),
+            new MarkerDTO([1, 3], "Second point (layer 1)", "red")
+        ]));
+        layers.push(new LayerDTO("nonaccidents", [
+            new MarkerDTO([-7, -5], "First point (layer 2)", "blue"),
+            new MarkerDTO([-2, 2], "Second point (layer 2)", "blue"),
+            new MarkerDTO([-90, -180], "Third point (layer 2)", "blue"),
+        ]));
+
+        lmap.addLayers(layers);
+        const llayers = lmap.getLayersControl();
+        expect(llayers).toBeDefined();
+        expect(lmap.getLayers()).toHaveLength(1);
+        // @ts-expect-error Can't get layers in another way...
+        const allLayers: L.Layer[] = llayers?._layers;
+        expect(allLayers).toHaveLength(2);
     });
 
     test("Layer Creation", () => {
