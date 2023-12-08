@@ -21,7 +21,7 @@ export const ICONS: {[key: string]: L.Icon} = {
 function createIcon(color: string)
 {
     return L.icon({
-        iconUrl: "../images/" + color + ".png",
+        iconUrl: "/static/images/" + color + ".png",
         iconSize: ICON_SIZE,
         iconAnchor: ICON_POINTED_POINT,
         popupAnchor: ICON_POPUP_POINT,
