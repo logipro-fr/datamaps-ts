@@ -3,17 +3,6 @@ import MapDTO from "../../../src/Domain/Model/DataMap/MapDTO";
 import MarkerDTO from "../../../src/Domain/Model/DataMap/MarkerDTO";
 
 describe("MapDTO", () => {
-    const date = "2023-11-21 08:32:15";
-    const millisecondsUntilNextPlainHour = 1665000;
-
-    beforeEach(() => {
-        jest.clearAllMocks();
-        jest.restoreAllMocks();
-
-        const mockDate = new Date(date);
-        jest.spyOn(global, "Date").mockImplementationOnce(() => mockDate);
-    });
-
     test("Creation with correct data", () => {
         const bounds: number[][] = [
             [0, 1],
@@ -64,8 +53,6 @@ describe("MapDTO", () => {
                 new MarkerDTO([1, 2], "marker ONE", "red"),
             ]),
         ]);
-
-        expect(map.validityPeriod).toBe(millisecondsUntilNextPlainHour);
     });
 
     test("Creation with object", () => {
@@ -108,6 +95,5 @@ describe("MapDTO", () => {
                 new MarkerDTO([1, 2], "marker ONE", "red"),
             ]),
         ]);
-        expect(map.validityPeriod).toBe(millisecondsUntilNextPlainHour);
     });
 });

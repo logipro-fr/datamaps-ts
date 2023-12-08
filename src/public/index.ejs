@@ -2,5 +2,9 @@
 <script type="text/javascript">
     const map = new MapConfigurator();
     map.setBounds(JSON.parse('<%= bounds %>'));
-    map.addLayers(JSON.parse('<%= layers %>'));
+    let layers = '<%= layers %>';
+    layers = layers.replaceAll("&#34;", "\"");
+    layers = layers.replaceAll("&#39;", "'");
+    layers = layers.replaceAll("\n", " ");
+    map.addLayers(JSON.parse(layers));
 </script>

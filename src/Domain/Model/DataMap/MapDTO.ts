@@ -6,7 +6,6 @@ export default class MapDTO {
     public readonly bounds: ReadonlyArray<ReadonlyArray<number>>;
     public readonly createdAt: string;
     public readonly layers: ReadonlyArray<LayerDTO>;
-    public readonly validityPeriod: number;
 
     constructor(
         mapId: string,
@@ -18,17 +17,7 @@ export default class MapDTO {
         this.bounds = [...bounds];
         this.createdAt = createdAt;
         this.layers = [...layers];
-        this.validityPeriod = this.millisecondsUntilNextPlainHour();
     }
-
-    private millisecondsUntilNextPlainHour(): number {
-        const date: Date = new Date();
-        const minutes: number = date.getMinutes();
-        const seconds: number = date.getSeconds();
-        const totalSeconds: number = minutes * 60 + seconds;
-        return (3600 - totalSeconds) * 1000;
-    }
-
     static createFromObject(object: MapObject): MapDTO {
         return new this(
             object.mapId,

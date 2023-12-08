@@ -13,13 +13,10 @@ app.set('view engine', 'ejs');
 
 app.get("/", async (req, res) => {
 
-    var datamap = new Datamap(new FetchHttpClient());
+    const datamap = new Datamap(new FetchHttpClient());
     const map = (await datamap.search(1))[0];
 
-    var layers = JSON.stringify(map.layers);
-    layers = layers.replaceAll("&#34;", "\"");
-    layers = layers.replaceAll("&#39;", "'");
-    layers = layers.replaceAll("\n", " ");
+    const layers = JSON.stringify(map.layers);
     const bounds = JSON.stringify(map.bounds);
     app.use(express.static(path.resolve() + "/dist/public/resources"));
     res.render(path.resolve() + "/src/public/index", {bounds: bounds, layers: layers});

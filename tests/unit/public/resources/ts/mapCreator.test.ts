@@ -12,6 +12,10 @@ describe("Map Creator", () => {
         jest.clearAllMocks();
     });
 
+    afterEach(() => {
+        jest.clearAllMocks();
+    })
+
     test("Can create a map", () => {
         document.body.innerHTML = '<div id="map"></div>';
         const bounds: Bounds = [[-10,-10],[10,10]];
@@ -39,5 +43,16 @@ describe("Map Creator", () => {
         ]));
         mapCreator.addLayers(layers);
         expect(mockedMap.addLayers).toHaveBeenCalledWith(layers);
+    });
+
+    test("Can add legend to map", () => {
+        const mapCreator = new MapCreator();
+        expect(LeafletMap).toHaveBeenCalledTimes(1);
+        const mockedMap = mapCreator.getMap();
+
+        mapCreator.addLegend("Test legend")
+
+        expect(mockedMap.defineLegend).toHaveBeenCalledWith("Test legend");
+
     });
 });

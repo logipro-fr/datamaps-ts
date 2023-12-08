@@ -21,7 +21,11 @@ export default class MapCreator {
         this.map.defineBounds(bounds);
     }
 
-    public addLayers(layers: LayerDTO[]) {
+    public addLayers(layers: LayerDTO[]): void {
         this.map.addLayers(layers);
+    }
+
+    public addLegend(legend: string): void {
+        this.map.defineLegend(legend);
     }
 }

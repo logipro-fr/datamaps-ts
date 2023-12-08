@@ -164,4 +164,20 @@ export default class LeafletMap implements IMap {
             })
             .bindPopup(marker.description);
     }
+
+    public defineLegend(legend: string): void {
+        this.createLeafletLegend(legend).addTo(this.map);
+    }
+
+    public createLeafletLegend(legendText: string): L.Control {
+        const leafletLegend = new L.Control({ position: "bottomleft" });
+        leafletLegend.onAdd = function () {
+            var div = L.DomUtil.create("div", "legend");
+            div.setAttribute("id", "no-margin");
+            div.innerHTML = legendText;
+            return div;
+        };
+        return leafletLegend;
+    }
+
 }

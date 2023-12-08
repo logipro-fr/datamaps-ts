@@ -10,4 +10,6 @@ export default interface IMap {
     setUpTiles(): void;
 
     addLayers(layers: LayerDTO[]): void;
+
+    defineLegend(legend: string): void;
 }

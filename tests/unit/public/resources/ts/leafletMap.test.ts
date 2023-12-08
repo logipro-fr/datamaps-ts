@@ -64,7 +64,7 @@ describe("Leaflet facade", () => {
         const llayers = lmap.getLayersControl();
         expect(llayers).toBeDefined();
         expect(lmap.getLayers()).toHaveLength(1);
-        // @ts-expect-error Can't get layers in another way...
+        // @ts-expect-error Can't get layers in any other way...
         const allLayers: L.Layer[] = llayers?._layers;
         expect(allLayers).toHaveLength(2);
     });
@@ -164,7 +164,12 @@ describe("Leaflet facade", () => {
         expect(lcircleMarker2.getPopup()?.getContent()).toStrictEqual("Second point");
         expect(lcircleMarker2.options.color).toBe("green");
         expect(lcircleMarker2.options.fillColor).toBe("green");
-    })
+    });
+
+    test("Legend creation", () => {
+        const lmap = new LeafletMap();
+        lmap.defineLegend("Test legend");
+    });
 
     test("Error thrown when no tile layer", () => {
         const lmap = new LeafletMap();
