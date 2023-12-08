@@ -28,7 +28,8 @@ describe("Node server", () => {
 
     test("'/' route return value", async () => {
         const response = await request(app).get("/");
-        expect(response.text).toEqual("Welcome on my website");
+        expect(response.text).toContain("<!DOCTYPE html>");
+        expect(response.text).toContain('<div id="map"></div>');
     });
 
     test("'/maps' route return html page with map", async () => {
