@@ -13,6 +13,10 @@ export default class LeafletMap implements IMap {
         this.map = L.map("map");
     }
 
+    public getMap(): L.Map {
+        return this.map;
+    }
+
     public defineBounds(bounds: Bounds): void {
         this.map.fitBounds(bounds);
     }
@@ -119,14 +123,14 @@ export default class LeafletMap implements IMap {
     }
 
     public defineLegend(legend: string): void {
-        this.createLeafletLegend(legend).addTo(this.map);
+        const llegend = this.createLeafletLegend(legend)
+        llegend.addTo(this.map);
     }
 
     public createLeafletLegend(legendText: string): L.Control {
         const leafletLegend = new L.Control({ position: "bottomleft" });
         leafletLegend.onAdd = function () {
             var div = L.DomUtil.create("div", "legend");
-            div.setAttribute("id", "no-margin");
             div.innerHTML = legendText;
             return div;
         };

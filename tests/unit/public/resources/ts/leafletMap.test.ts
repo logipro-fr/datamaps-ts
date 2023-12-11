@@ -61,9 +61,20 @@ describe("Leaflet facade", () => {
         const llayers = lmap.getLayersControl();
         expect(llayers).toBeDefined();
         expect(lmap.getLayers()).toHaveLength(1);
-        // @ts-expect-error Can't get layers in any other way...
+        // @ts-expect-error Can't get layers in any other way: private property
         const allLayers: L.Layer[] = llayers?._layers;
         expect(allLayers).toHaveLength(2);
+    });
+
+    test("Add no layer to map", () => {
+        const lmap = new LeafletMap();
+
+        const layers: LayerDTO[] = [];
+
+        lmap.addLayers(layers);
+        const llayers = lmap.getLayersControl();
+        expect(llayers).toBeDefined();
+        expect(lmap.getLayers()).toHaveLength(0);
     });
 
     test("Layer Creation", () => {
@@ -190,7 +201,22 @@ describe("Leaflet facade", () => {
 
     test("Legend creation", () => {
         const lmap = new LeafletMap();
-        lmap.defineLegend("Test legend");
+
+        const legend = lmap.createLeafletLegend("Testing legend");
+        expect(legend.options.position).toBe("bottomleft");
+        if (legend.onAdd != undefined) {
+            const htmldiv = legend.onAdd(lmap.getMap());
+            expect(htmldiv.tagName).toBe("DIV");
+            expect(htmldiv.className).toContain("legend");
+            expect(htmldiv.innerHTML).toBe("Testing legend");
+        }
+
+        lmap.defineLegend("Map legend");
+        expect(lmap.getMap()
+        // @ts-expect-error It's a private property (which has no sense in javascript and this code is only executed in javascript)
+            ._controlCorners
+            .bottomleft.innerHTML).toContain("Map legend");
+    
     });
 
     test("Error thrown when no tile layer", () => {
