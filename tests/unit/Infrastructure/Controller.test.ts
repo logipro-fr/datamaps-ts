@@ -1,17 +1,27 @@
-import app, { listener } from "../../src/nodeserver";
+import app from "../../../src/Infrastructure/Controller";
 import request from "supertest";
 
 describe("Node server", () => {
+    let express;
+    let port = 4444;// + (+process.env.STRYKER_MUTATOR_WORKER || 0)
+
+    beforeEach(() => {
+        if (express != undefined) {
+            express.close();
+        }
+        express = app.listen(port);
+    });
+
     afterEach(() => {
         jest.clearAllMocks();
-    })
+    });
 
     afterAll(() => {
-        listener.close();
+        express.close();
     });
 
     test("Routes", async () => {
-        const routes = (await app)._router.stack;
+        const routes = app._router.stack;
         expect(doRoutesContainRoute(routes, "/")).toBeTruthy();
         expect(doRoutesContainRoute(routes, "/maps")).toBeTruthy();
         expect(doRoutesContainRoute(routes, "/map/:map_id")).toBeTruthy();
@@ -72,6 +82,14 @@ describe("Node server", () => {
         const response = await request(app).get("/map/a_specific_map");
         expect(response.text).toContain("<!DOCTYPE html>");
         expect(response.text).toContain("Error: 404: Map not found");
+    });
+
+    test("Static files are disponible", async () => {
+        const cssStyle = await request(app).get("/static/css/style.css");
+        expect(cssStyle.type).toEqual("text/css");
+
+        const jsCompiled = await request(app).get("/staticdist/js.js");
+        expect(jsCompiled.type).toEqual("application/javascript");
     });
 });
 
