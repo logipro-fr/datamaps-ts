@@ -3,30 +3,7 @@ import "leaflet.markercluster";
 import LayerDTO from "src/Domain/Model/DataMap/LayerDTO";
 import MarkerDTO from "src/Domain/Model/DataMap/MarkerDTO";
 import IMap, { Bounds } from "./IMap";
-
-const ICON_SIZE: [number, number] = [48, 48];
-const ICON_POINTED_POINT: [number, number] = [
-    ICON_SIZE[0] / 2, 
-    ICON_SIZE[1]
-];
-const ICON_POPUP_POINT: [number, number] = [
-    0, 
-    - ICON_SIZE[1] * 2 / 3
-];
-export const ICONS: {[key: string]: L.Icon} = {
-    "blue": createIcon("blue"),
-    "red": createIcon("red"),
-    "green": createIcon("green"),
-};
-function createIcon(color: string)
-{
-    return L.icon({
-        iconUrl: "/static/images/" + color + ".png",
-        iconSize: ICON_SIZE,
-        iconAnchor: ICON_POINTED_POINT,
-        popupAnchor: ICON_POPUP_POINT,
-    });
-}
+import { ICONS } from "./icons";
 
 export default class LeafletMap implements IMap {
     private map: L.Map;
@@ -40,23 +17,15 @@ export default class LeafletMap implements IMap {
         this.map.fitBounds(bounds);
     }
 
-    public getBounds(): Bounds {
-        const boundSouthWest: Bounds[0] = [
-            this.map.getBounds().getSouth(),
-            this.map.getBounds().getWest(),
-        ];
-        const boundNorthEast: Bounds[1] = [
-            this.map.getBounds().getNorth(),
-            this.map.getBounds().getEast(),
-        ];
-        return [boundSouthWest, boundNorthEast];
+    public getBounds(): L.LatLngBounds {
+        return this.map.getBounds();
     }
 
     public defineMaxBounds(bounds: Bounds): void {
         this.map.setMaxBounds(bounds);
     }
 
-    public centerMapOn(point: L.LatLng): L.LatLng {
+    public getMapCenterWhenCenteredOn(point: L.LatLng): L.LatLng {
         this.map.flyTo(point);
         return this.map.getCenter();
     }
@@ -90,30 +59,18 @@ export default class LeafletMap implements IMap {
 
     public addLayers(layers: LayerDTO[]): void {
         const llayers = this.createLayersAs(layers);
-        Object.values(llayers)[0].addTo(this.map);
+        if (Object.values(llayers).length > 0) {
+            Object.values(llayers)[0].addTo(this.map);
+        }
         this.controlLayers = L.control.layers(undefined, llayers).addTo(this.map);
-    }
-
-    public getLayers(): L.Layer[] {
-        const llayers: L.Layer[] = [];
-
-        this.map.eachLayer(layer => {
-            llayers.push(layer);
-        });
-
-        return llayers;
-    }
-
-    public getLayersControl(): L.Control.Layers | undefined {
-        return this.controlLayers;
     }
 
     public createLayersAs(layers: LayerDTO[]): {[name: string]: L.LayerGroup} {
         const llayers: {[name: string]: L.LayerGroup} = {};
 
         layers.forEach(layer => {
-            const l = L.layerGroup(this.createMarkersAs(layer.markers));
-            llayers[layer.name] = l;
+            const llayer = L.layerGroup(this.createMarkersAs(layer.markers));
+            llayers[layer.name] = llayer;
         });
 
         return llayers;
@@ -165,6 +122,16 @@ export default class LeafletMap implements IMap {
             .bindPopup(marker.description);
     }
 
+    public getLayers(): L.Layer[] {
+        const llayers: L.Layer[] = [];
+        this.map.eachLayer(l => { llayers.push(l); });
+        return llayers;
+    }
+
+    public getLayersControl(): L.Control.Layers | undefined {
+        return this.controlLayers;
+    }
+
     public defineLegend(legend: string): void {
         this.createLeafletLegend(legend).addTo(this.map);
     }
@@ -179,5 +146,4 @@ export default class LeafletMap implements IMap {
         };
         return leafletLegend;
     }
-
 }
