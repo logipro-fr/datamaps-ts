@@ -77,22 +77,8 @@ export default class LeafletMap implements IMap {
     }
 
     public createMarkersAs(markers: readonly MarkerDTO[]): L.Layer[] {
-        const markersGroup = L.markerClusterGroup({
-            iconCreateFunction: function () {
-                return new L.DivIcon({
-                    iconSize: new L.Point(0, 0),
-                });
-            },
-        });
-        const circlesGroup = L.markerClusterGroup({
-            iconCreateFunction: function (cluster) {
-                return new L.DivIcon({
-                    html: cluster.getChildCount().toString(),
-                    className: "mycluster " + markers[0].color,
-                    iconSize: new L.Point(40, 40),
-                });
-            },
-        });
+        const markersGroup = L.markerClusterGroup(this.invisibleOptions());
+        const circlesGroup = L.markerClusterGroup(this.visibleOptions(markers[0].color));
 
         markers.forEach((m) => {
             this.createMarkerFrom(m).addTo(markersGroup);
@@ -145,5 +131,29 @@ export default class LeafletMap implements IMap {
             return div;
         };
         return leafletLegend;
+    }
+
+    public getInvisibleClusterIcon(): L.DivIcon {
+        return new L.DivIcon({iconSize: new L.Point(0, 0)});
+    }
+
+    public getVisibleClusterIcon(count: number, color: string): L.DivIcon {
+        return new L.DivIcon({
+            html: count.toString(),
+            className: "mycluster " + color,
+            iconSize: new L.Point(40, 40)
+        });
+    }
+    public invisibleOptions(): { iconCreateFunction: (cluster: {getChildCount: Function}) => L.DivIcon } {
+        return {
+            iconCreateFunction: this.getInvisibleClusterIcon
+        }
+    }
+    public visibleOptions(color: string): { iconCreateFunction: (cluster: {getChildCount: Function}) => L.DivIcon } {
+        return {
+            iconCreateFunction: (cluster: { getChildCount: Function }) => {
+                return this.getVisibleClusterIcon(cluster.getChildCount(), color);
+            }
+        }
     }
 }

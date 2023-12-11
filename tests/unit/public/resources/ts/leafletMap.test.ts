@@ -163,6 +163,31 @@ describe("Leaflet facade", () => {
         expect(lcircleMarker2.options.fillColor).toBe("green");
     });
 
+    test("Cluster style", () => {
+        const lmap = new LeafletMap();
+
+        const invisibleCluster = lmap.getInvisibleClusterIcon();
+        expect(invisibleCluster.options.iconSize).toStrictEqual(new L.Point(0, 0));
+
+        expect(lmap.invisibleOptions().iconCreateFunction).toBeDefined();
+
+        const visibleCluster = lmap.getVisibleClusterIcon(3, "red");
+        expect(visibleCluster.options.iconSize).toStrictEqual(new L.Point(40, 40));
+        expect(visibleCluster.options.html).toBe("3");
+        expect(visibleCluster.options.className).toContain("mycluster red");
+
+        const visibleCreation = lmap.visibleOptions("red").iconCreateFunction;
+        expect(visibleCreation).toBeDefined();
+        if (visibleCreation != undefined) {
+            const mockChildContainer = {
+                getChildCount: () => {
+                    return 3;
+                }
+            };
+            expect(visibleCreation(mockChildContainer)).toBeInstanceOf(L.DivIcon);
+        }
+    });
+
     test("Legend creation", () => {
         const lmap = new LeafletMap();
         lmap.defineLegend("Test legend");
