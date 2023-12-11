@@ -25,15 +25,12 @@ describe("Leaflet facade", () => {
         expect(lmap).toBeInstanceOf(LeafletMap);
 
         lmap.defineBounds([[-10, -10], [10, 10]]);
-        expect(arrayContainsArray(
-                lmap.getBounds(), 
-                [[-10, -10], [10, 10]]
-            )).toBeTruthy();
+        expect(lmap.getBounds().contains([[-10, -10], [10, 10]])).toBeTruthy();
 
-        expect(lmap.centerMapOn(POINT_OUT_OF_WORLD))
+        expect(lmap.getMapCenterWhenCenteredOn(POINT_OUT_OF_WORLD))
             .toStrictEqual(POINT_OUT_OF_WORLD);
         lmap.defineMaxBounds(WORLD_BOUNDS);
-        expect(lmap.centerMapOn(POINT_OUT_OF_WORLD))
+        expect(lmap.getMapCenterWhenCenteredOn(POINT_OUT_OF_WORLD))
             .not.toStrictEqual(POINT_OUT_OF_WORLD);
 
         lmap.setUpTiles();
@@ -176,23 +173,4 @@ describe("Leaflet facade", () => {
         expect(() => lmap.getTileLayerFromMap())
             .toThrow(Error("There are no tile layer in map"));
     });
-
-    function arrayContainsArray(
-        container: [[number, number], [number, number]],
-        contained: [[number, number], [number, number]],
-    ): boolean {
-        if (
-            container[0][0] > contained[0][0] ||
-            container[0][1] > contained[0][1]
-        ) {
-            return false;
-        }
-        if (
-            container[1][0] < contained[1][0] ||
-            container[1][1] < contained[1][1]
-        ) {
-            return false;
-        }
-        return true;
-    }
 });

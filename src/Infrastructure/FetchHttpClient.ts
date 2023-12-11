@@ -11,13 +11,21 @@ export default class FetchHttpClient implements HttpClientInterface {
             method: "POST",
             body: json,
         });
-        return response.json();
+        return this.formatResponse(await response.json());
     }
 
     async get_json(
         url: string,
     ): Promise<DatamapResponse<MapObject | {maps: MapObject[]}>> {
         const response = await fetch(url);
-        return response.json();
+        return this.formatResponse(await response.json());
+    }
+
+    private formatResponse<T = {response: Boolean}>(response: DatamapResponse<T>): DatamapResponse<T> {
+        if (response.success == true) {
+            return response;
+        } else {
+            throw new Error(response.error_code + ": " + response.message);
+        }
     }
 }
