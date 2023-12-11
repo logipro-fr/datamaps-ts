@@ -1,12 +1,11 @@
+import DatamapsResponse, { GetRequestData, PostRequestData } from "src/Application/DatamapsResponse";
 import HttpClientInterface from "src/Application/HttpClientInterface";
-import DatamapResponse from "src/Application/DatamapResponse";
-import MapObject from "src/Domain/Model/DataMap/Types/MapObject";
 
 export default class FetchHttpClient implements HttpClientInterface {
     async post_json(
         url: string,
         json: string,
-    ): Promise<DatamapResponse<{ mapId: string; displayUrl: string }>> {
+    ): Promise<DatamapsResponse<PostRequestData>> {
         const response = await fetch(url, {
             method: "POST",
             body: json,
@@ -16,12 +15,12 @@ export default class FetchHttpClient implements HttpClientInterface {
 
     async get_json(
         url: string,
-    ): Promise<DatamapResponse<MapObject | {maps: MapObject[]}>> {
+    ): Promise<DatamapsResponse<GetRequestData>> {
         const response = await fetch(url);
         return this.formatResponse(await response.json());
     }
 
-    private formatResponse<T = {response: Boolean}>(response: DatamapResponse<T>): DatamapResponse<T> {
+    private formatResponse<T = {response: Boolean}>(response: DatamapsResponse<T>): DatamapsResponse<T> {
         if (response.success == true) {
             return response;
         } else {

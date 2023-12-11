@@ -1,11 +1,10 @@
-import DatamapResponse from "./DatamapResponse";
-import MapObject from "../Domain/Model/DataMap/Types/MapObject";
+import DatamapsResponse, { GetRequestData, PostRequestData } from "./DatamapsResponse";
 
 export default interface HttpClientInterface {
     post_json(
         url: string,
         json: string,
-    ): Promise<DatamapResponse<{ mapId: string; displayUrl: string }>>;
+    ): Promise<DatamapsResponse<PostRequestData>>;
 
-    get_json(url: string): Promise<DatamapResponse<MapObject | {maps: MapObject[]}>>;
+    get_json(url: string): Promise<DatamapsResponse<GetRequestData>>;
 }

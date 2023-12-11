@@ -1,23 +1,8 @@
 import Datamap from "../../../src/Application/Datamap";
-import HttpClientInterface from "../../../src/Application/HttpClientInterface";
+import DatamapsResponse, { GetRequestData, PostRequestData } from "../../../src/Application/DatamapsResponse";
+import FetchHttpClient from "../../../src/Infrastructure/FetchHttpClient";
 import MapDTO from "../../../src/Domain/Model/DataMap/MapDTO";
 import MapObject from "../../../src/Domain/Model/DataMap/Types/MapObject";
-import DatamapResponse from "../../../src/Application/DatamapResponse";
-
-class FakeHttpClient implements HttpClientInterface {
-    post_json(
-        url: string,
-        json: string,
-    ): Promise<DatamapResponse<{ mapId: string; displayUrl: string }>> {
-        throw new Error(
-            "Called empty function from " + url + " with data as " + json,
-        );
-    }
-
-    get_json(url: string): Promise<DatamapResponse<MapObject | {maps: MapObject[]}>> {
-        throw new Error("Called empty function from " + url);
-    }
-}
 
 describe("Datamap", () => {
     test("Create map", async () => {
@@ -46,7 +31,7 @@ describe("Datamap", () => {
 
     test("Display map", async () => {
         const mockedClient = getMockedHttpClientForGETWith(
-            getDefaultResponseWith(getDefaultMap()),
+            getGetResponseWith(getDefaultMap()),
         );
         const datamap = new Datamap(mockedClient);
         const map: MapDTO = await datamap.display(
@@ -65,7 +50,7 @@ describe("Datamap", () => {
 
     test("Search 1 map", async () => {
         const mockedClient = getMockedHttpClientForGETWith(
-            getDefaultResponseWith({
+            getGetResponseWith({
                 maps: [getDefaultMap()]
             }),
         );
@@ -86,7 +71,7 @@ describe("Datamap", () => {
 
     test("Search 3 maps", async () => {
         const mockedClient = getMockedHttpClientForGETWith(
-            getDefaultResponseWith({
+            getGetResponseWith({
                 maps: [
                 getDefaultMap(),
                 getDefaultMap(),
@@ -104,9 +89,9 @@ describe("Datamap", () => {
         expect(maps).toHaveLength(3);
     });
 
-    function getDefaultResponseWith(
-        data: MapObject | {maps: MapObject[]},
-    ): DatamapResponse<MapObject | {maps: MapObject[]}> {
+    function getGetResponseWith(
+        data: GetRequestData,
+    ): DatamapsResponse<GetRequestData> {
         return {
             success: true,
             data: data,
@@ -144,9 +129,9 @@ describe("Datamap", () => {
     }
 
     function getMockedHttpClientForGETWith(
-        valueToReturn: DatamapResponse<MapObject | {maps: MapObject[]}>,
-    ): FakeHttpClient {
-        const mockedClient = new FakeHttpClient();
+        valueToReturn: DatamapsResponse<GetRequestData>,
+    ): FetchHttpClient {
+        const mockedClient = new FetchHttpClient();
         jest.spyOn(mockedClient, "get_json").mockReturnValue(
             Promise.resolve(valueToReturn),
         );
@@ -154,9 +139,9 @@ describe("Datamap", () => {
     }
 
     function getMockedHttpClientForPOSTWith(
-        valueToReturn: DatamapResponse<{ mapId: string; displayUrl: string }>,
-    ): FakeHttpClient {
-        const mockedClient = new FakeHttpClient();
+        valueToReturn: DatamapsResponse<PostRequestData>,
+    ): FetchHttpClient {
+        const mockedClient = new FetchHttpClient();
         jest.spyOn(mockedClient, "post_json").mockReturnValue(
             Promise.resolve(valueToReturn),
         );
