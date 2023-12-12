@@ -3,7 +3,7 @@ import "leaflet.markercluster";
 import LayerDTO from "src/Domain/Model/DataMap/LayerDTO";
 import MarkerDTO from "src/Domain/Model/DataMap/MarkerDTO";
 import IMap, { Bounds } from "./IMap";
-import { ICONS } from "./icons";
+import { ICONS } from "./leafletIcons";
 
 export default class LeafletMap implements IMap {
     private map: L.Map;
@@ -29,7 +29,7 @@ export default class LeafletMap implements IMap {
         this.map.setMaxBounds(bounds);
     }
 
-    public getMapCenterWhenCenteredOn(point: L.LatLng): L.LatLng {
+    public centeredOn(point: L.LatLng): L.LatLng {
         this.map.flyTo(point);
         return this.map.getCenter();
     }
@@ -81,8 +81,8 @@ export default class LeafletMap implements IMap {
     }
 
     public createMarkersAs(markers: readonly MarkerDTO[]): L.Layer[] {
-        const markersGroup = L.markerClusterGroup(this.invisibleOptions());
-        const circlesGroup = L.markerClusterGroup(this.visibleOptions(markers[0].color));
+        const markersGroup = L.markerClusterGroup(this.hiddenClusterOptions());
+        const circlesGroup = L.markerClusterGroup(this.shownClusterOptions(markers[0].color));
 
         markers.forEach((m) => {
             this.createMarkerFrom(m).addTo(markersGroup);
@@ -137,26 +137,26 @@ export default class LeafletMap implements IMap {
         return leafletLegend;
     }
 
-    public getInvisibleClusterIcon(): L.DivIcon {
+    public getHiddenClusterIcon(): L.DivIcon {
         return new L.DivIcon({iconSize: new L.Point(0, 0)});
     }
 
-    public getVisibleClusterIcon(count: number, color: string): L.DivIcon {
+    public getShownClusterIcon(count: number, color: string): L.DivIcon {
         return new L.DivIcon({
             html: count.toString(),
             className: "mycluster " + color,
             iconSize: new L.Point(40, 40)
         });
     }
-    public invisibleOptions(): { iconCreateFunction: (cluster: {getChildCount: Function}) => L.DivIcon } {
+    public hiddenClusterOptions(): { iconCreateFunction: (cluster: {getChildCount: Function}) => L.DivIcon } {
         return {
-            iconCreateFunction: this.getInvisibleClusterIcon
+            iconCreateFunction: this.getHiddenClusterIcon
         }
     }
-    public visibleOptions(color: string): { iconCreateFunction: (cluster: {getChildCount: Function}) => L.DivIcon } {
+    public shownClusterOptions(color: string): { iconCreateFunction: (cluster: {getChildCount: Function}) => L.DivIcon } {
         return {
             iconCreateFunction: (cluster: { getChildCount: Function }) => {
-                return this.getVisibleClusterIcon(cluster.getChildCount(), color);
+                return this.getShownClusterIcon(cluster.getChildCount(), color);
             }
         }
     }

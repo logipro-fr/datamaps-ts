@@ -20,7 +20,7 @@ export default class FetchHttpClient implements HttpClientInterface {
         return this.formatResponse(await response.json());
     }
 
-    private formatResponse<T = {response: Boolean}>(response: DatamapsResponse<T>): DatamapsResponse<T> {
+    private formatResponse<T>(response: DatamapsResponse<T>): DatamapsResponse<T> {
         if (response.success == true) {
             return response;
         } else {
