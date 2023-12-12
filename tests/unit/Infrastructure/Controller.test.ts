@@ -3,14 +3,21 @@ import request from "supertest";
 
 describe("Node server", () => {
     let express;
-    let port = 4444;// + (+process.env.STRYKER_MUTATOR_WORKER || 0)
+    let port = 4444;
 
     beforeEach(() => {
         if (express != undefined) {
             express.close();
         }
-        express = app.listen(port);
+        express = app.listen(getPort(port));
     });
+
+    function getPort(port: number): number {
+        if (process.env.STRYKER_MUTATOR_WORKER != undefined) {
+            return port + (+process.env.STRYKER_MUTATOR_WORKER || 0)
+        }
+        return port;
+    }
 
     afterEach(() => {
         jest.clearAllMocks();
