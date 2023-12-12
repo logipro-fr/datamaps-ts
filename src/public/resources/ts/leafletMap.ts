@@ -130,7 +130,7 @@ export default class LeafletMap implements IMap {
     public createLeafletLegend(legendText: string): L.Control {
         const leafletLegend = new L.Control({ position: "bottomleft" });
         leafletLegend.onAdd = function () {
-            var div = L.DomUtil.create("div", "legend");
+            const div = L.DomUtil.create("div", "legend");
             div.innerHTML = legendText;
             return div;
         };
@@ -148,14 +148,14 @@ export default class LeafletMap implements IMap {
             iconSize: new L.Point(40, 40)
         });
     }
-    public hiddenClusterOptions(): { iconCreateFunction: (cluster: {getChildCount: Function}) => L.DivIcon } {
+    public hiddenClusterOptions(): { iconCreateFunction: (cluster: {getChildCount: () => number}) => L.DivIcon } {
         return {
             iconCreateFunction: this.getHiddenClusterIcon
         }
     }
-    public shownClusterOptions(color: string): { iconCreateFunction: (cluster: {getChildCount: Function}) => L.DivIcon } {
+    public shownClusterOptions(color: string): { iconCreateFunction: (cluster: {getChildCount: () => number}) => L.DivIcon } {
         return {
-            iconCreateFunction: (cluster: { getChildCount: Function }) => {
+            iconCreateFunction: (cluster: { getChildCount: () => number }) => {
                 return this.getShownClusterIcon(cluster.getChildCount(), color);
             }
         }

@@ -3,7 +3,7 @@ import request from "supertest";
 
 describe("Node server", () => {
     let express;
-    let port = 4444;
+    const port = 4444;
 
     beforeEach(() => {
         if (express != undefined) {

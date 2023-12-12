@@ -13,7 +13,7 @@ app.set('view engine', 'ejs');
 app.use("/staticdist", express.static(path.resolve() + "/dist/public/resources"));
 app.use("/static", express.static(path.resolve() + "/src/public/resources"));
 
-async function renderLastMap(req: Request, res: Response): Promise<any> {
+async function renderLastMap(req: Request, res: Response): Promise<void> {
     const datamap = new Datamap(new FetchHttpClient());
     const map = (await datamap.search(1))[0];
 
@@ -24,6 +24,7 @@ async function renderLastMap(req: Request, res: Response): Promise<any> {
             layers: JSON.stringify(map.layers)
         }
     );
+    return;
 }
 
 app.get("/", renderLastMap);
