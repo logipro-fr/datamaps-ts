@@ -1,11 +1,11 @@
 type MapObject = {
     mapId: string;
-    bounds: number[][];
+    bounds: [[number, number], [number, number]];
     createdAt: string;
     layers: {
         name: string;
         markers: {
-            point: number[];
+            point: [number, number];
             description: string;
             color: string;
         }[];
